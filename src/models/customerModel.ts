@@ -43,3 +43,16 @@ export function updateCustomer(id: number, input: Omit<Customer, "id">): Custome
 
     return customers[index];
 }
+
+export function deleteCustomer(id: number): boolean {
+    const index = customers.findIndex(customer => customer.id === id);
+
+    if (index === -1) {
+        return false;
+    }
+
+    //  Remove from array
+    customers.splice(index, 1)
+
+    return true;
+}

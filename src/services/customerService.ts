@@ -43,3 +43,11 @@ export function updateCustomer(id: number, input: CreateCustomerInput) {
     return customer;
 }
 
+export function deleteCustomer(id: number) {
+    const customerDeleted = customerModel.deleteCustomer(id);
+
+    if (!customerDeleted) {
+        throw new CustomerNotFoundError(id);
+    }
+}
+

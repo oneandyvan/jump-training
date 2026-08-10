@@ -1,3 +1,4 @@
+import { CustomerNotFoundError } from "../errors/NotFound.js";
 import * as customerModel from "../models/customerModel.js";
 
 interface CreateCustomerInput {
@@ -20,5 +21,15 @@ export function createCustomer(input: CreateCustomerInput) {
 
 export function getCustomers() {
     return customerModel.getCustomers();
+}
+
+export function getCustomer(id: number) {
+    const customer = customerModel.findCustomerById(id);
+
+    if (!customer) {
+        throw new CustomerNotFoundError(id);
+    }
+
+    return customer;
 }
 

@@ -33,3 +33,13 @@ export function getCustomer(id: number) {
     return customer;
 }
 
+export function updateCustomer(id: number, input: CreateCustomerInput) {
+    const customer = customerModel.updateCustomer(id, input);
+
+    if (!customer) {
+        throw new CustomerNotFoundError(id);
+    }
+
+    return customer;
+}
+

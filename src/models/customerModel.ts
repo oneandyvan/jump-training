@@ -28,3 +28,18 @@ export function findCustomerById(id: number): Customer | undefined {
 export function findCustomerByEmail(email: string): Customer | undefined {
     return customers.find(customer => customer.email === email);
 }
+
+export function updateCustomer(id: number, input: Omit<Customer, "id">): Customer | undefined {
+    const index = customers.findIndex(customer => customer.id === id);
+
+    if (index === -1) {
+        return undefined;
+    }
+
+    customers[index] = {
+        id,
+        ...input
+    };
+
+    return customers[index];
+}

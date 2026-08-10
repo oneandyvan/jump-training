@@ -44,3 +44,27 @@ export function getCustomer(req: Request, res: Response) {
         }
     }
 }
+
+export function updateCustomer(req: Request, res: Response) {
+    const id = Number(req.params.id);
+
+    if (Number.isNaN(id)) {
+        return res.status(400).json({
+            error: "Customer ID must be a number"
+        });
+    }
+
+    //  Check if customer exists
+    try {
+        const customer = customerService.updateCustomer(id, req.body);
+
+        //  Updated customer successfully and returns
+        return res.status(200).json(customer);
+    } catch (error) {
+        if (error instanceof CustomerNotFoundError) {
+            return res.status(404).json({
+                error: error.message
+            });
+        }
+    }
+}

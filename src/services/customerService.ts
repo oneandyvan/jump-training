@@ -6,6 +6,9 @@ interface CreateCustomerInput {
 }
 
 export function createCustomer(input: CreateCustomerInput) {
+    if (customerModel.findCustomerByEmail(input.email)) {
+        throw new Error("Customer with this email already exists");
+    }
 
     const customer = {
         name: input.name,
@@ -13,5 +16,9 @@ export function createCustomer(input: CreateCustomerInput) {
     };
 
     return customerModel.createCustomer(customer);
+}
+
+export function getCustomers() {
+    return customerModel.getCustomers();
 }
 

@@ -12,3 +12,10 @@ export function createCustomer(req: Request, res: Response) {
         });
     }
 }
+
+export function getCustomers(req: Request, res: Response) {
+    const customers = customerService.getCustomers();
+
+    //  Return customers sucessfully (empty case is fine)
+    res.status(200).json(customers);
+}

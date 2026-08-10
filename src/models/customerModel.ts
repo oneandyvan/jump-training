@@ -12,10 +12,19 @@ export function createCustomer(customerDetails: Omit<Customer, "id">): Customer 
         ...customerDetails,
         id: nextId++,
     }
+    customers.push(customer);
 
     return customer;
 }
 
+export function getCustomers(): Customer[] {
+    return customers;
+}
+
 export function findCustomerById(id: number): Customer | undefined {
     return customers.find(customer => customer.id === id);
+}
+
+export function findCustomerByEmail(email: string): Customer | undefined {
+    return customers.find(customer => customer.email === email);
 }

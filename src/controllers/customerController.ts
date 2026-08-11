@@ -7,7 +7,7 @@ export async function createCustomer(req: Request, res: Response) {
         const customer = await customerService.createCustomer(req.body);
         res.status(201).json(customer);
     } catch (error) {
-        res.status(400).json({
+        res.status(500).json({
             error: (error as Error).message
         });
     }
@@ -62,7 +62,7 @@ export async function updateCustomer(req: Request, res: Response) {
             });
         }
 
-        return res.status(400).json({
+        return res.status(500).json({
             error: (error as Error).message,
         });
     }

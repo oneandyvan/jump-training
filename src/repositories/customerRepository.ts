@@ -10,6 +10,7 @@ type CustomerDocument = {
 
 const collection = () => getCustomerCollection();
 
+//  Helper function to convert document to Customer object
 function toCustomer(document: CustomerDocument): Customer {
     return {
         id: document._id.toString(),

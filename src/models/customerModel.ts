@@ -1,58 +1,81 @@
+﻿import { ObjectId } from "mongodb";
+import { getCustomerCollection } from "../db.js";
+
 export interface Customer {
-    id: number;
+    id: string;
     name: string;
     email: string;
 }
 
-const customers: Customer[] = [];
-let nextId = 1; //  Simulate database AUTO-INCREMENT
+type CustomerDocument = {
+    _id: ObjectId;
+    name: string;
+    email: string;
+};
 
-export function createCustomer(customerDetails: Omit<Customer, "id">): Customer {
-    const customer: Customer = {
-        ...customerDetails,
-        id: nextId++,
-    }
-    customers.push(customer);
+const collection = () => getCustomerCollection();
 
-    return customer;
-}
-
-export function getCustomers(): Customer[] {
-    return customers;
-}
-
-export function findCustomerById(id: number): Customer | undefined {
-    return customers.find(customer => customer.id === id);
-}
-
-export function findCustomerByEmail(email: string): Customer | undefined {
-    return customers.find(customer => customer.email === email);
-}
-
-export function updateCustomer(id: number, input: Omit<Customer, "id">): Customer | undefined {
-    const index = customers.findIndex(customer => customer.id === id);
-
-    if (index === -1) {
-        return undefined;
-    }
-
-    customers[index] = {
-        id,
-        ...input
+//  Helper function to convert document to Customer object
+function toCustomer(document: CustomerDocument): Customer {
+    return {
+        id: document._id.toString(),
+        name: document.name,
+        email: document.email,
     };
-
-    return customers[index];
 }
 
-export function deleteCustomer(id: number): boolean {
-    const index = customers.findIndex(customer => customer.id === id);
+export async function createCustomer(customerDetails: Omit<Customer, "id">): Promise<Customer> {
+    const result = await collection().insertOne({
+        name: customerDetails.name,
+        email: customerDetails.email,
+    });
 
-    if (index === -1) {
+    return {
+        ...customerDetails,
+        id: result.insertedId.toString(),
+    };
+}
+
+export async function getCustomers(): Promise<Customer[]> {
+    const customers = await collection().find<CustomerDocument>({}).toArray();
+    return customers.map(toCustomer);
+}
+
+export async function findCustomerById(id: string): Promise<Customer | null> {
+    if (!ObjectId.isValid(id)) {
+        return null;
+    }
+
+    const customer = await collection().findOne<CustomerDocument>({ _id: new ObjectId(id) });
+    return customer ? toCustomer(customer) : null;
+}
+
+export async function findCustomerByEmail(email: string): Promise<Customer | null> {
+    const customer = await collection().findOne<CustomerDocument>({ email });
+    return customer ? toCustomer(customer) : null;
+}
+
+export async function updateCustomer(id: string, input: Omit<Customer, "id">): Promise<Customer | null> {
+    if (!ObjectId.isValid(id)) {
+        return null;
+    }
+
+    //  Return updated result
+    const result = await collection().findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: input },
+        { returnDocument: "after" }
+    );
+
+    const updatedDocument = result as CustomerDocument | null;
+    return updatedDocument ? toCustomer(updatedDocument) : null;
+}
+
+export async function deleteCustomer(id: string): Promise<boolean> {
+    if (!ObjectId.isValid(id)) {
         return false;
     }
 
-    //  Remove from array
-    customers.splice(index, 1)
-
-    return true;
+    const result = await collection().deleteOne({ _id: new ObjectId(id) });
+    return result.deletedCount === 1;
 }

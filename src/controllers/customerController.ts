@@ -1,11 +1,10 @@
-import { CustomerNotFoundError } from "../errors/NotFound.js";
+﻿import { CustomerNotFoundError } from "../errors/NotFound.js";
 import type { Request, Response } from "express";
 import * as customerService from "../services/customerService.js";
 
-export function createCustomer(req: Request, res: Response) {
+export async function createCustomer(req: Request, res: Response) {
     try {
-        //  Customer created succesfully
-        const customer = customerService.createCustomer(req.body);
+        const customer = await customerService.createCustomer(req.body);
         res.status(201).json(customer);
     } catch (error) {
         res.status(400).json({
@@ -14,27 +13,22 @@ export function createCustomer(req: Request, res: Response) {
     }
 }
 
-export function getCustomers(req: Request, res: Response) {
-    const customers = customerService.getCustomers();
-
-    //  Return customers sucessfully (empty case is fine)
+export async function getCustomers(req: Request, res: Response) {
+    const customers = await customerService.getCustomers();
     res.status(200).json(customers);
 }
 
-export function getCustomer(req: Request, res: Response) {
-    const id = Number(req.params.id);
+export async function getCustomer(req: Request, res: Response) {
+    const id = req.params.id;
 
-    if (Number.isNaN(id)) {
+    if (typeof id !== "string" || !id) {
         return res.status(400).json({
-            error: "Customer ID must be a number"
+            error: "Customer ID is required"
         });
     }
 
-    //  Check if customer exists
     try {
-        const customer = customerService.getCustomer(id);
-
-        //  Found customer successfully
+        const customer = await customerService.getCustomer(id);
         return res.status(200).json(customer);
     } catch (error) {
         if (error instanceof CustomerNotFoundError) {
@@ -42,47 +36,49 @@ export function getCustomer(req: Request, res: Response) {
                 error: error.message
             });
         }
+
+        return res.status(500).json({
+            error: (error as Error).message,
+        });
     }
 }
 
-export function updateCustomer(req: Request, res: Response) {
-    const id = Number(req.params.id);
+export async function updateCustomer(req: Request, res: Response) {
+    const id = req.params.id;
 
-    if (Number.isNaN(id)) {
+    if (typeof id !== "string" || !id) {
         return res.status(400).json({
-            error: "Customer ID must be a number"
+            error: "Customer ID is required"
         });
     }
 
-    //  Check if customer exists
     try {
-        const customer = customerService.updateCustomer(id, req.body);
-
-        //  Updated customer successfully and returns
+        const customer = await customerService.updateCustomer(id, req.body);
         return res.status(200).json(customer);
     } catch (error) {
         if (error instanceof CustomerNotFoundError) {
             return res.status(404).json({
-                error: error.message
+                error: error.message,
             });
         }
+
+        return res.status(400).json({
+            error: (error as Error).message,
+        });
     }
 }
 
-export function deleteCustomer(req: Request, res: Response) {
-    const id = Number(req.params.id);
+export async function deleteCustomer(req: Request, res: Response) {
+    const id = req.params.id;
 
-    if (Number.isNaN(id)) {
+    if (typeof id !== "string" || !id) {
         return res.status(400).json({
-            error: "Customer ID must be a number"
+            error: "Customer ID is required"
         });
     }
 
-    //  Check if customer exists
     try {
-        customerService.deleteCustomer(id);
-
-        //  Deleted customer sucessfully (return no body)
+        await customerService.deleteCustomer(id);
         return res.status(204).end();
     } catch (error) {
         if (error instanceof CustomerNotFoundError) {
@@ -90,5 +86,9 @@ export function deleteCustomer(req: Request, res: Response) {
                 error: error.message
             });
         }
+
+        return res.status(500).json({
+            error: (error as Error).message,
+        });
     }
 }

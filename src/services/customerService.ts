@@ -6,8 +6,9 @@ interface CreateCustomerInput {
     email: string;
 }
 
-export function createCustomer(input: CreateCustomerInput) {
-    if (customerModel.findCustomerByEmail(input.email)) {
+export async function createCustomer(input: CreateCustomerInput) {
+    const existingCustomer = await customerModel.findCustomerByEmail(input.email);
+    if (existingCustomer) {
         throw new Error("Customer with this email already exists");
     }
 
@@ -19,12 +20,12 @@ export function createCustomer(input: CreateCustomerInput) {
     return customerModel.createCustomer(customer);
 }
 
-export function getCustomers() {
+export async function getCustomers() {
     return customerModel.getCustomers();
 }
 
-export function getCustomer(id: number) {
-    const customer = customerModel.findCustomerById(id);
+export async function getCustomer(id: string) {
+    const customer = await customerModel.findCustomerById(id);
 
     if (!customer) {
         throw new CustomerNotFoundError(id);
@@ -33,8 +34,8 @@ export function getCustomer(id: number) {
     return customer;
 }
 
-export function updateCustomer(id: number, input: CreateCustomerInput) {
-    const customer = customerModel.updateCustomer(id, input);
+export async function updateCustomer(id: string, input: CreateCustomerInput) {
+    const customer = await customerModel.updateCustomer(id, input);
 
     if (!customer) {
         throw new CustomerNotFoundError(id);
@@ -43,8 +44,8 @@ export function updateCustomer(id: number, input: CreateCustomerInput) {
     return customer;
 }
 
-export function deleteCustomer(id: number) {
-    const customerDeleted = customerModel.deleteCustomer(id);
+export async function deleteCustomer(id: string) {
+    const customerDeleted = await customerModel.deleteCustomer(id);
 
     if (!customerDeleted) {
         throw new CustomerNotFoundError(id);

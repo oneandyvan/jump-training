@@ -1,31 +1,22 @@
 import { CustomerNotFoundError } from "../errors/NotFound.js";
-import * as customerModel from "../models/customerModel.js";
+import * as customerRepository from "../repositories/customerRepository.js";
+import type { CustomerInput } from "../types/customer.js";
 
-interface CreateCustomerInput {
-    name: string;
-    email: string;
-}
-
-export async function createCustomer(input: CreateCustomerInput) {
-    const existingCustomer = await customerModel.findCustomerByEmail(input.email);
+export async function createCustomer(input: CustomerInput) {
+    const existingCustomer = await customerRepository.findCustomerByEmail(input.email);
     if (existingCustomer) {
         throw new Error("Customer with this email already exists");
     }
 
-    const customer = {
-        name: input.name,
-        email: input.email
-    };
-
-    return customerModel.createCustomer(customer);
+    return customerRepository.createCustomer(input);
 }
 
 export async function getCustomers() {
-    return customerModel.getCustomers();
+    return customerRepository.getCustomers();
 }
 
 export async function getCustomer(id: string) {
-    const customer = await customerModel.findCustomerById(id);
+    const customer = await customerRepository.findCustomerById(id);
 
     if (!customer) {
         throw new CustomerNotFoundError(id);
@@ -34,8 +25,8 @@ export async function getCustomer(id: string) {
     return customer;
 }
 
-export async function updateCustomer(id: string, input: CreateCustomerInput) {
-    const customer = await customerModel.updateCustomer(id, input);
+export async function updateCustomer(id: string, input: CustomerInput) {
+    const customer = await customerRepository.updateCustomer(id, input);
 
     if (!customer) {
         throw new CustomerNotFoundError(id);
@@ -45,7 +36,7 @@ export async function updateCustomer(id: string, input: CreateCustomerInput) {
 }
 
 export async function deleteCustomer(id: string) {
-    const customerDeleted = await customerModel.deleteCustomer(id);
+    const customerDeleted = await customerRepository.deleteCustomer(id);
 
     if (!customerDeleted) {
         throw new CustomerNotFoundError(id);

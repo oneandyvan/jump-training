@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { MongoClient, type Collection, type Document } from "mongodb";
+import { MongoConnectionNotFound } from "./errors/MongoError.js";
 
 dotenv.config();
 
@@ -15,18 +16,28 @@ if (!dbName) {
 
 const client = new MongoClient(uri);
 let customerCollection: Collection<Document> | null = null;
+let accountCollection: Collection<Document> | null = null;
 
 export async function connectToDatabase() {
     await client.connect();
     const db = client.db(dbName);
     customerCollection = db.collection("customers");
+    accountCollection = db.collection("accounts");
     console.log(`Connected to MongoDB database \"${dbName}\"`);
 }
 
 export function getCustomerCollection() {
     if (!customerCollection) {
-        throw new Error("MongoDB client is not connected. Call connectToDatabase() first.");
+        throw new MongoConnectionNotFound();
     }
 
     return customerCollection;
+}
+
+export function getAccountCollection() {
+    if (!accountCollection) {
+        throw new MongoConnectionNotFound();
+    }
+
+    return accountCollection;
 }

@@ -1,11 +1,6 @@
-﻿import { ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { getCustomerCollection } from "../db.js";
-
-export interface Customer {
-    id: string;
-    name: string;
-    email: string;
-}
+import type { Customer, CustomerInput } from "../types/customer.js";
 
 type CustomerDocument = {
     _id: ObjectId;
@@ -15,7 +10,6 @@ type CustomerDocument = {
 
 const collection = () => getCustomerCollection();
 
-//  Helper function to convert document to Customer object
 function toCustomer(document: CustomerDocument): Customer {
     return {
         id: document._id.toString(),
@@ -24,7 +18,7 @@ function toCustomer(document: CustomerDocument): Customer {
     };
 }
 
-export async function createCustomer(customerDetails: Omit<Customer, "id">): Promise<Customer> {
+export async function createCustomer(customerDetails: CustomerInput): Promise<Customer> {
     const result = await collection().insertOne({
         name: customerDetails.name,
         email: customerDetails.email,
@@ -55,12 +49,11 @@ export async function findCustomerByEmail(email: string): Promise<Customer | nul
     return customer ? toCustomer(customer) : null;
 }
 
-export async function updateCustomer(id: string, input: Omit<Customer, "id">): Promise<Customer | null> {
+export async function updateCustomer(id: string, input: CustomerInput): Promise<Customer | null> {
     if (!ObjectId.isValid(id)) {
         return null;
     }
 
-    //  Return updated result
     const result = await collection().findOneAndUpdate(
         { _id: new ObjectId(id) },
         { $set: input },

@@ -31,10 +31,16 @@ export async function createAccount(accountDetails: AccountInput): Promise<Accou
         created_at: new Date(),
     }
 
-    const result = await collection().insertOne({account});
+    const result = await collection().insertOne(account);
 
     return {
         ...account,
         id: result.insertedId.toString(),
     };
+}
+
+export async function getAccounts(customer_id: string): Promise<Account[]> {
+    //  Get all accounts that have matching customer_id
+    const accounts = await collection().find<AccountDocument>({user_id: customer_id}).toArray();
+    return accounts.map(toAccount);
 }

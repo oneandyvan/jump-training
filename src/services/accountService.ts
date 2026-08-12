@@ -16,3 +16,11 @@ export async function createAccount(input: AccountInput) {
     return accountRepository.createAccount(input);
 }
 
+export async function getAccounts(customer_id: string) {
+    if (customerRepository.findCustomerById(customer_id) === null) {
+        throw new CustomerNotFoundError(customer_id);
+    }
+
+    return accountRepository.getAccounts(customer_id);
+}
+

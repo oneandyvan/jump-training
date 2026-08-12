@@ -4,3 +4,10 @@ export class CustomerNotFoundError extends Error {
         this.name = "CustomerNotFoundError";
     }
 }
+
+export class AccountNotFoundError extends Error {
+    constructor(id: string) {
+        super(`Account with ID ${id} not found`);
+        this.name = "AccountNotFoundError";
+    }
+}

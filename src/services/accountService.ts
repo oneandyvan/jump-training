@@ -1,7 +1,7 @@
 import * as customerRepository from "../repositories/customerRepository.js";
 import * as accountRepository from "../repositories/accountRepository.js";
 import type { AccountInput } from "../types/account.js";
-import { CustomerNotFoundError } from "../errors/NotFound.js";
+import { CustomerNotFoundError, AccountNotFoundError } from "../errors/NotFound.js";
 import { AccountTypeError } from "../errors/InvalidOption.js";
 
 export async function createAccount(input: AccountInput) {
@@ -9,7 +9,7 @@ export async function createAccount(input: AccountInput) {
         throw new CustomerNotFoundError(input.user_id);
     }
 
-    if (input.account_type !== "savings" && input.account_type !== "checking") {
+    if (input.account_type !== "SAVINGS" && input.account_type !== "CHECKING") {
         throw new AccountTypeError(input.account_type);
     }
 
@@ -27,5 +27,14 @@ export async function getAccounts(customer_id: string, premium: number | null) {
         return accounts.filter((account) => account.balance > premium);
     }
     return accounts;
+}
+
+export async function getAccount(id: string) {
+    const account = accountRepository.findAccountById(id);
+    if (account === null) {
+        throw new AccountNotFoundError(id);
+    }
+
+    return account;
 }
 

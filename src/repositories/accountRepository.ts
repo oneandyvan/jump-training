@@ -45,3 +45,17 @@ export async function getAccounts(customer_id: string): Promise<Account[]> {
     const accounts = await collection().find<AccountDocument>({user_id: customer_id}).toArray();
     return accounts.map(toAccount);
 }
+
+export async function findAccountById(id: string) {
+    const account = await collection().findOne<AccountDocument>({ _id: new ObjectId(id) });
+    return account ? toAccount(account) : null;
+}
+
+export async function deposit(id: string, amount: number) {
+    const result = await collection().updateOne(
+        { _id: new ObjectId(id) },
+        { $inc: {balance: amount} }
+    );
+
+    return result;
+}

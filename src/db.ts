@@ -17,12 +17,14 @@ if (!dbName) {
 const client = new MongoClient(uri);
 let customerCollection: Collection<Document> | null = null;
 let accountCollection: Collection<Document> | null = null;
+let transactionCollection: Collection<Document> | null = null;
 
 export async function connectToDatabase() {
     await client.connect();
     const db = client.db(dbName);
     customerCollection = db.collection("customers");
     accountCollection = db.collection("accounts");
+    transactionCollection = db.collection("transactions");
     console.log(`Connected to MongoDB database \"${dbName}\"`);
 }
 
@@ -40,4 +42,12 @@ export function getAccountCollection() {
     }
 
     return accountCollection;
+}
+
+export function getTransactionCollection() {
+    if (!transactionCollection) {
+        throw new MongoConnectionNotFound();
+    }
+
+    return transactionCollection;
 }

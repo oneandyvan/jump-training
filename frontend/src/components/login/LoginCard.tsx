@@ -1,54 +1,76 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser, saveAuthToken } from '../../services/loginService';
 import LoginError from './LoginError';
 
 export default function LoginCard() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    // Handle form submission
-    // TODO: For now use hardcoded password since backend has not implemented password/hashing/auth yet
-    const handleSubmit = (e: React.SubmitEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement login logic
-        console.log('Login attempt:', { email, password });
+        setError('');
+        setLoading(true);
+
+        // Validate form
         if (!email || !password) {
             setError('Please fill in all fields');
-        } else {
-            setError('');
-            // Handle login
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await loginUser({ email, password });
+            
+            // Save token if provided
+            if (response.token) {
+                saveAuthToken(response.token);
+            }
+
+            // Redirect to home or dashboard on success
+            navigate('/');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Login failed. Please try again.';
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-    <div className="login-card">
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-            />
-          </div>
-          <button type="submit" className="login-button">
-            Sign In
-          </button>
-          {error && <LoginError error={error} />}
-        </form>
-      </div>
+        <div className="login-card">
+            <h2>Login</h2>
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email"
+                        disabled={loading}
+                    />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password"
+                        disabled={loading}
+                    />
+                </div>
+                <button type="submit" className="login-button" disabled={loading}>
+                    {loading ? 'Signing in...' : 'Sign In'}
+                </button>
+                {error && <LoginError error={error} />}
+            </form>
+        </div>
     );
 }

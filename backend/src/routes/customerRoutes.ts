@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCustomer, getCustomers, getCustomer, updateCustomer, deleteCustomer } from "../controllers/customerController.js";
+import { createCustomer, getCustomers, getCustomer, updateCustomer, deleteCustomer, loginCustomer } from "../controllers/customerController.js";
 import { getAccounts } from "../controllers/accountController.js";
 
 
@@ -11,5 +11,8 @@ router.get("/:id", getCustomer);
 router.put("/:id", updateCustomer);
 router.delete("/:id", deleteCustomer);
 router.get("/:id/accounts", getAccounts);
+
+//  For login
+router.post("/login", loginCustomer);
 
 export default router;

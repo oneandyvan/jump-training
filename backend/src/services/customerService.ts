@@ -43,3 +43,12 @@ export async function deleteCustomer(id: string) {
     }
 }
 
+export async function loginCustomer(email: string, password: string) {
+    // TODO For now, we are not checking the password. In a real application, you would check the password here.
+    const customer = await customerRepository.findCustomerByEmail(email);
+    if (!customer) {
+        throw new Error("Invalid email or password");
+    }
+
+    return customer;
+}

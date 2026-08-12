@@ -92,3 +92,24 @@ export async function deleteCustomer(req: Request, res: Response) {
         });
     }
 }
+
+export async function loginCustomer(req: Request, res: Response) {
+    const { email, password } = req.body;   
+
+    if (!email || !password) {
+        return res.status(400).json({
+            error: "Email and password are required"
+        });
+    }
+
+    try {
+        const customer = await customerService.loginCustomer(email, password);
+        return res.status(200).json(customer);
+    } catch (error) {
+        if (error instanceof Error) {
+            return res.status(404).json({
+                error: error.message
+            });
+        }  
+    }
+}

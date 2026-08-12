@@ -2,6 +2,7 @@ import { getUser } from '../services/loginService';
 import WelcomeMessage from '../components/home/WelcomeMessage';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import DefaultMessage from '../components/home/DefaultMessage';
 
 export default function Home() {
   const location = useLocation();
@@ -21,10 +22,7 @@ export default function Home() {
       {user ? (
         <WelcomeMessage name={user.name} />
       ) : (
-        <>
-          <h1>Welcome to the Bank!</h1>
-          <p>Sign in to view your accounts and transactions</p>
-        </>
+        <DefaultMessage />
       )}
     </main>
   );

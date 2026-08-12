@@ -38,5 +38,10 @@
 }
 
 .loginItem {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: lightgray;
+  color: black;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
 }

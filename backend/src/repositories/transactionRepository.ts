@@ -1,7 +1,7 @@
 import { ObjectId, Double } from "mongodb";
 import { getTransactionCollection } from "../db.js";
 import type { Transaction } from "../types/transaction.js";
-import * as accountRepository from "../repositories/accountRepository.js";
+import * as accountRepository from "./accountRepository.js";
 
 type TransactionDocument = {
     _id: ObjectId;

@@ -1,0 +1,30 @@
+.header {
+  display: grid;
+  width: 100%;
+  grid-row-start: 1;
+  scrollbar-width: 100%;
+}
+
+.navbar {
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: left;
+  filter: drop-shadow(3px 3px 4px rgba(0, 0, 0, 0.4));
+}
+
+.navbar > a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.4rem;
+  transition-duration: 0.3s;
+  padding: 20px 3% 20px;
+  display: block;
+}
+
+.navbar > a:hover, .navbar > a:focus {
+  box-shadow: inset 0 -5px 0 0 rgb(32, 160, 220);
+  text-decoration: underline;
+}

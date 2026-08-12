@@ -5,13 +5,15 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
 export interface LoginResponse {
   token?: string;
-  user?: {
-    id: string;
-    email: string;
-    name: string;
-  };
+  user?: User;
   message?: string;
 }
 
@@ -30,8 +32,10 @@ export async function loginUser(credentials: LoginRequest): Promise<LoginRespons
       throw new Error(errorData.error || `Login failed with status ${response.status}`);
     }
 
-    const data: LoginResponse = await response.json();
-    return data;
+    const data = await response.json();
+    return {
+        user: data
+    };
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message, { cause: error });
@@ -50,4 +54,27 @@ export function getAuthToken(): string | null {
 
 export function clearAuthToken(): void {
   localStorage.removeItem('authToken');
+}
+
+export function saveUser(user: User): void {
+  localStorage.setItem('user', JSON.stringify(user));
+}
+
+export function getUser(): User | null {
+  const userJson = localStorage.getItem('user');
+  if (!userJson) return null;
+  try {
+    return JSON.parse(userJson) as User;
+  } catch {
+    return null;
+  }
+}
+
+export function clearUser(): void {
+  localStorage.removeItem('user');
+}
+
+export function logout(): void {
+  clearAuthToken();
+  clearUser();
 }

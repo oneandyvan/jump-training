@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from './Header.module.css';
+import { getUser, logout } from '../services/loginService';
+import { useEffect, useState } from 'react';
 
 export default function Header () {
 
@@ -11,12 +13,46 @@ export default function Header () {
 }
 
 function Navbar() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [user, setUser] = useState(getUser());
+
+    useEffect(() => {
+        const checkUser = () => {
+            const currentUser = getUser();
+            setUser(currentUser);
+        };
+
+        // Check user on mount and route change
+        checkUser();
+        
+        // Listen for storage changes (logout from another tab)
+        window.addEventListener('storage', checkUser);
+        return () => window.removeEventListener('storage', checkUser);
+    }, [location]);
+
+    const handleLogout = () => {
+        logout();
+        setUser(null);
+        navigate('/');
+    };
+
     return (
         <nav className={styles.navbar}>
-            <Link to="/">Home</Link>
-            <Link to="/accounts">Accounts</Link>
-            <Link to="/transactions">Transactions</Link>
-            <Link to="/login">Login</Link>
+            <div className={styles.navInfo}>
+                <Link to="/">Home</Link>
+                <Link to="/accounts">Accounts</Link>
+                <Link to="/transactions">Transactions</Link>
+            </div>      
+            <div className={styles.loginItem}>
+                {user ? (
+                    <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', textDecoration: 'underline' }}>
+                        Log Out
+                    </button>
+                ) : (
+                    <Link to="/login">Login</Link>
+                )}
+            </div>          
         </nav>
     )
 }

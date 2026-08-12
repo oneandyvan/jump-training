@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, saveAuthToken } from '../../services/loginService';
+import { loginUser, saveAuthToken, saveUser } from '../../services/loginService';
 import LoginError from './LoginError';
 
 export default function LoginCard() {
@@ -10,7 +10,7 @@ export default function LoginCard() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
         setLoading(true);
@@ -28,6 +28,11 @@ export default function LoginCard() {
             // Save token if provided
             if (response.token) {
                 saveAuthToken(response.token);
+            }
+
+            // Save user info if provided
+            if (response.user) {
+                saveUser(response.user);
             }
 
             // Redirect to home or dashboard on success

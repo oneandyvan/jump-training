@@ -1,11 +1,11 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, Double } from "mongodb";
 import { getAccountCollection } from "../db.js";
 import type { Account, AccountInput } from "../types/account.js";
 
 type AccountDocument = {
     _id: ObjectId;
     user_id: string;
-    balance: number;
+    balance: Double;
     account_type: string;
     created_at: Date;
 };
@@ -17,7 +17,7 @@ function toAccount(document: AccountDocument): Account {
     return {
         id: document._id.toString(),
         user_id: document.user_id,
-        balance: document.balance,
+        balance: Number(document.balance),
         account_type: document.account_type,
         created_at: document.created_at,
     };
@@ -26,7 +26,7 @@ function toAccount(document: AccountDocument): Account {
 export async function createAccount(accountDetails: AccountInput): Promise<Account> {
     const account = {
         user_id: accountDetails.user_id,
-        balance: 0,
+        balance: new Double(0.0),
         account_type: accountDetails.account_type,
         created_at: new Date(),
     }
@@ -35,6 +35,7 @@ export async function createAccount(accountDetails: AccountInput): Promise<Accou
 
     return {
         ...account,
+        balance: 0,
         id: result.insertedId.toString(),
     };
 }

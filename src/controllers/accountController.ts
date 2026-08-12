@@ -15,6 +15,7 @@ export async function createAccount(req: Request, res: Response) {
 
 export async function getAccounts(req: Request, res: Response) {
     const id = req.params.id;
+    const premium = typeof req.query.premium === "string" ? Number(req.query.premium) : null;
 
     if (typeof id !== "string" || !id) {
         return res.status(400).json({
@@ -23,7 +24,7 @@ export async function getAccounts(req: Request, res: Response) {
     }
 
     try {
-        const accounts = await accountService.getAccounts(id);
+        const accounts = await accountService.getAccounts(id, premium);
         return res.status(200).json(accounts);
     } catch (error) {
         if (error instanceof CustomerNotFoundError) {

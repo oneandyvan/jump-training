@@ -1,0 +1,7 @@
+.loginError {
+    color: darkred;
+    background-color: #f8d7da;
+    padding: 5px;
+    border: 1px solid darkred;
+    border-radius: 5px;
+}

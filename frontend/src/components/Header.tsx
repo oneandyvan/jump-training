@@ -44,13 +44,13 @@ function Navbar() {
                 <Link to="/accounts">Accounts</Link>
                 <Link to="/transactions">Transactions</Link>
             </div>      
-            <div className={styles.loginItem}>
+            <div>
                 {user ? (
-                    <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', textDecoration: 'underline' }}>
+                    <button onClick={handleLogout} className={styles.logoutButton}>
                         Log Out
                     </button>
                 ) : (
-                    <Link to="/login">Login</Link>
+                    <Link to="/login" className={styles.loginItem}>Login</Link>
                 )}
             </div>          
         </nav>

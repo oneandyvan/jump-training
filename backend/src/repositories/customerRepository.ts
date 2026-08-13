@@ -6,6 +6,7 @@ type CustomerDocument = {
     _id: ObjectId;
     name: string;
     email: string;
+    password: string
 };
 
 const collection = () => getCustomerCollection();
@@ -16,22 +17,25 @@ function toCustomer(document: CustomerDocument): Customer {
         id: document._id.toString(),
         name: document.name,
         email: document.email,
+        password: document.password
     };
 }
 
-export async function createCustomer(customerDetails: CustomerInput): Promise<Customer> {
+export async function createCustomer(customerDetails: CustomerInput): Promise<Omit<Customer, "password">> {
     const result = await collection().insertOne({
         name: customerDetails.name,
         email: customerDetails.email,
+        password: customerDetails.password
     });
 
     return {
-        ...customerDetails,
+        name: customerDetails.name,
+        email: customerDetails.email,
         id: result.insertedId.toString(),
     };
 }
 
-export async function getCustomers(): Promise<Customer[]> {
+export async function getCustomers(): Promise<Omit<Customer, "password">[]> {
     const customers = await collection().find<CustomerDocument>({}).toArray();
     return customers.map(toCustomer);
 }

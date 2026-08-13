@@ -1,3 +1,4 @@
+import styles from './Login.module.css'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, saveAuthToken, saveUser } from '../../services/loginService';
@@ -46,35 +47,39 @@ export default function LoginCard() {
     };
 
     return (
-        <div className="login-card">
-            <h2>Login</h2>
+        <div className={styles.loginCard}>
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="email">Email</label>
-                    <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                        disabled={loading}
-                    />
+                <h2>Login</h2>
+                <div className={styles.formStack}>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="email">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            disabled={loading}
+                        />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="password">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter your password"
+                            disabled={loading}
+                        />
+                    </div>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
-                        disabled={loading}
-                    />
-                </div>
-                <button type="submit" className="login-button" disabled={loading}>
+                
+                {error && <LoginError error={error} />}
+
+                <button type="submit" className={styles.loginButton} disabled={loading}>
                     {loading ? 'Signing in...' : 'Sign In'}
                 </button>
-                {error && <LoginError error={error} />}
             </form>
         </div>
     );

@@ -1,6 +1,7 @@
 import { CustomerNotFoundError } from "../errors/NotFound.js";
 import * as customerRepository from "../repositories/customerRepository.js";
 import type { CustomerInput } from "../types/customer.js";
+import bcrypt from "bcrypt";
 
 export async function createCustomer(input: CustomerInput) {
     const existingCustomer = await customerRepository.findCustomerByEmail(input.email);
@@ -8,7 +9,12 @@ export async function createCustomer(input: CustomerInput) {
         throw new Error("Customer with this email already exists");
     }
 
-    return customerRepository.createCustomer(input);
+    const hashedPassword = await bcrypt.hash(input.password, 10);
+
+    return customerRepository.createCustomer({
+        ...input,
+        password: hashedPassword
+    });
 }
 
 export async function getCustomers() {

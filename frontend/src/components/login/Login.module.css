@@ -4,4 +4,44 @@
     padding: 5px;
     border: 1px solid darkred;
     border-radius: 5px;
+    margin-top: 0.5rem;
+}
+
+.loginCard {
+    display: flex;
+    border-radius: 20px;
+    border: 3px solid var(--border);
+    padding: 1rem;
+    min-width: 600px;
+    justify-content: center;
+}
+
+.formStack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.formGroup {
+    display: grid;
+    align-items: left;
+
+    label {
+        text-align: left;
+    }
+
+    input {
+        padding: 5px;
+    }
+}
+
+.loginButton {
+    border-radius: 25px;
+    width: 70%;
+    max-width: 300px;
+    padding: 5px 10px;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    background-color: var(--accent);
 }

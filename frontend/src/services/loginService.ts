@@ -5,15 +5,13 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-}
-
 export interface LoginResponse {
   token?: string;
-  user?: User;
+  user?: {
+    id: string;
+    email: string;
+    name: string;
+  };
   message?: string;
 }
 
@@ -43,39 +41,4 @@ export async function loginUser(credentials: LoginRequest): Promise<LoginRespons
     }
     throw new Error('An unexpected error occurred during login', { cause: error });
   }
-}
-
-export function saveAuthToken(token: string): void {
-  localStorage.setItem('authToken', token);
-}
-
-export function getAuthToken(): string | null {
-  return localStorage.getItem('authToken');
-}
-
-export function clearAuthToken(): void {
-  localStorage.removeItem('authToken');
-}
-
-export function saveUser(user: User): void {
-  localStorage.setItem('user', JSON.stringify(user));
-}
-
-export function getUser(): User | null {
-  const userJson = localStorage.getItem('user');
-  if (!userJson) return null;
-  try {
-    return JSON.parse(userJson) as User;
-  } catch {
-    return null;
-  }
-}
-
-export function clearUser(): void {
-  localStorage.removeItem('user');
-}
-
-export function logout(): void {
-  clearAuthToken();
-  clearUser();
 }

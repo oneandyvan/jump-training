@@ -1,8 +1,9 @@
 import styles from './Login.module.css'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, saveAuthToken, saveUser } from '../../services/loginService';
+import { loginUser } from '../../services/loginService';
 import LoginError from './LoginError';
+import { useAuth } from '../../context/useAuth';
 
 export default function LoginCard() {
     const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function LoginCard() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const auth = useAuth();
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -28,12 +30,12 @@ export default function LoginCard() {
             
             // Save token if provided
             if (response.token) {
-                saveAuthToken(response.token);
+                auth.setToken(response.token);
             }
 
             // Save user info if provided
             if (response.user) {
-                saveUser(response.user);
+                auth.setUser(response.user);
             }
 
             // Redirect to home or dashboard on success

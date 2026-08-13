@@ -1,7 +1,6 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Header.module.css';
-import { getUser, logout } from '../services/loginService';
-import { useEffect, useState } from 'react';
+import { useAuth } from '../context/useAuth';
 
 export default function Header () {
 
@@ -14,25 +13,11 @@ export default function Header () {
 
 function Navbar() {
     const navigate = useNavigate();
-    const location = useLocation();
-    const [user, setUser] = useState(getUser());
-
-    useEffect(() => {
-        const checkUser = () => {
-            const currentUser = getUser();
-            setUser(currentUser);
-        };
-
-        // Check user on mount and route change
-        checkUser();
-        
-        // Listen for storage changes (logout from another tab)
-        window.addEventListener('storage', checkUser);
-        return () => window.removeEventListener('storage', checkUser);
-    }, [location]);
+    const { user, setUser, setToken } = useAuth();
 
     const handleLogout = () => {
-        logout();
+        setUser(null);
+        setToken(null);
         setUser(null);
         navigate('/');
     };

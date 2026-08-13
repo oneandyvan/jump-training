@@ -6,18 +6,21 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Accounts from './pages/Accounts';
 import Transactions from './pages/Transactions';
+import { AuthProvider } from './context/AuthProvider';
 
 function App() {
   return (
     <div className="page">
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/accounts" element={<Accounts />} />
-        <Route path="/transactions" element={<Transactions />} />
-      </Routes>
-      <Footer />
+      <AuthProvider>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/accounts" element={<Accounts />} />
+          <Route path="/transactions" element={<Transactions />} />
+        </Routes>
+        <Footer />
+      </AuthProvider>
     </div>
   )
 }

@@ -33,6 +33,19 @@ export default function AccountCollection({userId} : {userId: string}) {
         }
     }
 
+    //  Callback for child cards to update parent state
+    function handleAccountUpdated(updatedAccount: AccountResponse) {
+        setAccounts((currentAccounts) =>
+            currentAccounts
+                ? currentAccounts.map((account) =>
+                    account.id === updatedAccount.id
+                        ? updatedAccount
+                        : account
+                )
+                : [updatedAccount]
+        );
+    }
+
     return (
         <section className={styles.accountSection}>
             <div className={styles.accountHeader}>
@@ -58,6 +71,7 @@ export default function AccountCollection({userId} : {userId: string}) {
                     <AccountCard
                         key={account.id}
                         account={account}
+                        onAccountUpdated={handleAccountUpdated}
                     />
                 ))}
             </div>

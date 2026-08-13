@@ -1,9 +1,38 @@
 import { useState } from "react"
 import { type AccountResponse } from "../../services/accountService"
 import styles from "./AccountCard.module.css"
+import { depositAccount } from "../../services/accountService"
 
-export default function AccountCard({ account }: { account: AccountResponse }) {
-    const [amount, setAmount] = useState("0.00")
+export default function AccountCard({ account, onAccountUpdated }: { account: AccountResponse, onAccountUpdated: (updatedAccount: AccountResponse) => void}) {
+    const [amount, setAmount] = useState("0.00");
+
+    async function handleDeposit() {
+        const depositAmount = Number(amount);
+        if (!depositAmount || depositAmount <= 0) {
+            return;
+        }
+
+        try {
+            await depositAccount({
+                accountId: account.id,
+                amount: depositAmount,
+            });
+
+            const updatedAccount = {
+                ...account,
+                balance: account.balance + depositAmount
+            }
+
+            // Tell parent about updated account
+            onAccountUpdated(updatedAccount);
+
+            setAmount("");
+
+        } catch (error) {
+            console.error('Failed to deposit into account:', error);
+            alert(error instanceof Error ? error.message : 'Failed to deposit into account');
+        }
+    }
 
     return (
         <article className={styles.card}>
@@ -35,7 +64,11 @@ export default function AccountCard({ account }: { account: AccountResponse }) {
             </label>
 
             <div className={styles.actionRow}>
-                <button type="button" className={`${styles.actionButton} ${styles.depositButton}`}>
+                <button 
+                    type="button" 
+                    className={`${styles.actionButton} ${styles.depositButton}`}
+                    onClick={handleDeposit}
+                >
                     Deposit
                 </button>
                 <button type="button" className={`${styles.actionButton} ${styles.withdrawButton}`}>

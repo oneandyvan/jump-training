@@ -13,6 +13,12 @@ interface CreateAccountInput {
   account_type: string;
 }
 
+interface TransactionResponse {
+  txn_type: string;
+  amount: number;
+  created_at: string;
+}
+
 export async function getAccountsForUser(customerId: string): Promise<AccountResponse[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/customers/${customerId}/accounts`, {
@@ -59,5 +65,30 @@ export async function createAccount(payload: CreateAccountInput): Promise<Accoun
       throw new Error(error.message, { cause: error });
     }
     throw new Error('An unexpected error occurred while making account', { cause: error });
+  }
+}
+
+export async function depositAccount({accountId, amount}: {accountId: string, amount: number}): Promise<TransactionResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}/deposit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({amount})
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Failed to deposit with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message, { cause: error });
+    }
+    throw new Error('An unexpected error occurred while depositing account', { cause: error });
   }
 }

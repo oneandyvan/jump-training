@@ -2,6 +2,7 @@ import { CustomerNotFoundError } from "../errors/NotFound.js";
 import * as customerRepository from "../repositories/customerRepository.js";
 import type { CustomerInput } from "../types/customer.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export async function createCustomer(input: CustomerInput) {
     const existingCustomer = await customerRepository.findCustomerByEmail(input.email);
@@ -11,10 +12,24 @@ export async function createCustomer(input: CustomerInput) {
 
     const hashedPassword = await bcrypt.hash(input.password, 10);
 
-    return customerRepository.createCustomer({
+    const newCustomer = await customerRepository.createCustomer({
         ...input,
         password: hashedPassword
     });
+
+    const token = jwt.sign(
+        {   
+            customerId: newCustomer.id,
+            role: "customer"
+        },
+        process.env.JWT_SECRET!,
+        { expiresIn: "1h" }
+    );
+
+    return {
+        customer: newCustomer,
+        token: token
+    }
 }
 
 export async function getCustomers() {
@@ -50,11 +65,32 @@ export async function deleteCustomer(id: string) {
 }
 
 export async function loginCustomer(email: string, password: string) {
-    // TODO For now, we are not checking the password. In a real application, you would check the password here.
     const customer = await customerRepository.findCustomerByEmail(email);
     if (!customer) {
         throw new Error("Invalid email or password");
     }
 
-    return customer;
+    const passwordMatches = await bcrypt.compare(password, customer.password);
+
+    if (!passwordMatches) {
+        throw new Error("Invalid email or password");
+    }
+
+    const token = jwt.sign(
+        {   
+            customerId: customer.id,
+            role: "customer"
+        },
+        process.env.JWT_SECRET!,
+        { expiresIn: "1h" }
+    );
+
+    return {
+        customer: {
+            id: customer.id,
+            email: customer.email,
+            name: customer.name
+        },
+        token: token
+    };
 }

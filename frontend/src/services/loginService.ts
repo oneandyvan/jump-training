@@ -34,7 +34,8 @@ export async function loginUser(credentials: LoginRequest): Promise<LoginRespons
 
     const data = await response.json();
     return {
-        user: data
+        user: data.customer,
+        token: data.token
     };
   } catch (error) {
     if (error instanceof Error) {

@@ -115,7 +115,7 @@ export async function loginCustomer(req: Request, res: Response) {
         return res.status(200).json(customer);
     } catch (error) {
         if (error instanceof Error) {
-            return res.status(404).json({
+            return res.status(401).json({
                 error: error.message
             });
         }  

@@ -1,4 +1,5 @@
-﻿import app from "./app.js";
+﻿import "dotenv/config";
+import app from "./app.js";
 import { connectToDatabase } from "./db.js";
 
 const PORT = 8080;

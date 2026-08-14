@@ -119,3 +119,29 @@ export async function depositAccount({accountId, amount, token}: {accountId: str
     throw new Error('An unexpected error occurred while depositing account', { cause: error });
   }
 }
+
+export async function withdrawAccount({accountId, amount, token}: {accountId: string, amount: number, token: string}): Promise<TransactionResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}/withdraw`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({amount})
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Failed to withdraw with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message, { cause: error });
+    }
+    throw new Error('An unexpected error occurred while withdrawing account', { cause: error });
+  }
+}

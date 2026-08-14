@@ -49,6 +49,31 @@ export async function depositTransaction(accountId: string, amount: number) {
     };
 }
 
+export async function withdrawTransaction(accountId: string, amount: number) {
+    //  Update balance in account
+    const balanceResult = await accountRepository.withdraw(accountId, amount);
+
+    if (!balanceResult) {
+        throw new Error(`Couldn't withdraw money from account ${accountId}`);
+    }
+
+    //  Create transaction record
+    const transaction = {
+        account_id: accountId,
+        txn_type: "WITHDRAW",
+        amount: new Double(amount),
+        created_at: new Date(),
+    }
+
+    await collection().insertOne(transaction);
+
+    return {
+        txn_type: transaction.txn_type,
+        amount: amount,
+        created_at: transaction.created_at
+    };
+}
+
 export async function getTransactionsForAccount(accountId: string): Promise<Transaction[]> {
     const documents = await collection().find({ account_id: accountId }).toArray() as TransactionDocument[];
     return documents.map(toTransaction);

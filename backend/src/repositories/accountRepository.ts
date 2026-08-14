@@ -60,6 +60,30 @@ export async function deposit(id: string, amount: number) {
     return result;
 }
 
+export async function withdraw(id: string, amount: number) {
+    // Get account for type and balance check before withdrawing
+    const account = await findAccountById(id);
+    if (!account) {
+        throw new Error(`Account with id ${id} not found`);
+    }
+
+    //  Check account type
+    if (account.account_type === "SAVINGS" && account.balance - amount < 0) {
+        throw new Error(`Cannot withdraw from savings account with id ${id} as it would result in negative balance`);
+    }
+    else if (account.account_type === "CHECKING" && account.balance - amount < -100) {
+        throw new Error(`Cannot withdraw from checking account with id ${id} as it would result in balance below minimum required of 100`);
+    }
+
+
+    const result = await collection().updateOne(
+        { _id: new ObjectId(id) },
+        { $inc: {balance: -amount} }
+    );
+
+    return result;
+}
+
 export async function deleteAccount(id: string): Promise<boolean> {
     if (!ObjectId.isValid(id)) {
         return false;

@@ -10,6 +10,14 @@ export async function depositTransaction(accountId: string, amount: number) {
     return transactionRepository.depositTransaction(accountId, amount);
 } 
 
+export async function withdrawTransaction(accountId: string, amount: number) {
+    if (await accountRepository.findAccountById(accountId) === null) {
+        throw new AccountNotFoundError(accountId);
+    }
+
+    return transactionRepository.withdrawTransaction(accountId, amount);
+}
+
 export async function getTransactionsForCustomer(customerId: string) {
     return transactionRepository.getTransactionsForCustomer(customerId);
 }

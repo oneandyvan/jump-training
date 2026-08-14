@@ -1,6 +1,6 @@
 import { useState } from "react"
 import styles from "./AccountCard.module.css"
-import { depositAccount, deleteAccount, type AccountResponse } from "../../services/accountService"
+import { depositAccount, withdrawAccount, deleteAccount, type AccountResponse } from "../../services/accountService"
 
 type AccountCardProps = {
     account: AccountResponse, 
@@ -58,6 +58,35 @@ export default function AccountCard({ account, token, onAccountUpdated, onAccoun
             alert(error instanceof Error ? error.message : 'Failed to deposit into account');
         }
     }
+    
+    async function handleWithdraw() {
+        const withdrawAmount = Number(amount);
+        if (!withdrawAmount || withdrawAmount <= 0) {
+            return;
+        }
+
+        try {
+            await withdrawAccount({
+                accountId: account.id,
+                amount: withdrawAmount,
+                token,
+            });
+
+            const updatedAccount = {
+                ...account,
+                balance: account.balance - withdrawAmount
+            }
+
+            // Tell parent about updated account
+            onAccountUpdated(updatedAccount);
+
+            setAmount("");
+
+        } catch (error) {
+            console.error('Failed to withdraw from account:', error);
+            alert(error instanceof Error ? error.message : 'Failed to withdraw from account');
+        }
+    }
 
     return (
         <article className={styles.card}>
@@ -101,7 +130,11 @@ export default function AccountCard({ account, token, onAccountUpdated, onAccoun
                 >
                     Deposit
                 </button>
-                <button type="button" className={`${styles.actionButton} ${styles.withdrawButton}`}>
+                <button 
+                    type="button" 
+                    className={`${styles.actionButton} ${styles.withdrawButton}`}
+                    onClick={handleWithdraw}
+                >
                     Withdraw
                 </button>
             </div>

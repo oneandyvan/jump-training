@@ -1,8 +1,15 @@
-﻿import type { Request, Response } from "express";
+﻿import type { Response } from "express";
+import type { AuthenticatedRequest } from "../middleware/auth.js";
 import * as accountService from "../services/accountService.js";
 import { AccountNotFoundError, CustomerNotFoundError } from "../errors/NotFound.js";
 
-export async function createAccount(req: Request, res: Response) {
+export async function createAccount(req: AuthenticatedRequest, res: Response) {
+    if (req.body.user_id !== req.customerId) {
+        return res.status(403).json({
+            error: "You cannot create an account for another customer"
+        });
+    }
+
     try {
         const customer = await accountService.createAccount(req.body);
         res.status(201).json(customer);
@@ -13,13 +20,19 @@ export async function createAccount(req: Request, res: Response) {
     }
 }
 
-export async function getAccounts(req: Request, res: Response) {
+export async function getAccounts(req: AuthenticatedRequest, res: Response) {
     const id = req.params.id;
     const premium = typeof req.query.premium === "string" ? Number(req.query.premium) : null;
 
     if (typeof id !== "string" || !id) {
         return res.status(400).json({
             error: "Customer ID is required"
+        });
+    }
+
+    if (id !== req.customerId) {
+        return res.status(403).json({
+            error: "You cannot view another customer's accounts"
         });
     }
 
@@ -39,7 +52,7 @@ export async function getAccounts(req: Request, res: Response) {
     }
 }
 
-export async function getAccount(req: Request, res: Response) {
+export async function getAccount(req: AuthenticatedRequest, res: Response) {
     const id = req.params.id;
 
     if (typeof id !== "string" || !id) {
@@ -50,6 +63,13 @@ export async function getAccount(req: Request, res: Response) {
 
     try {
         const account = await accountService.getAccount(id);
+
+        if (account.user_id !== req.customerId) {
+            return res.status(403).json({
+                error: "You cannot view another customer's account"
+            });
+        }
+
         return res.status(200).json(account);
     } catch (error) {
         if (error instanceof AccountNotFoundError) {

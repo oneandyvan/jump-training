@@ -5,7 +5,7 @@ import { CustomerNotFoundError, AccountNotFoundError } from "../errors/NotFound.
 import { AccountTypeError } from "../errors/InvalidOption.js";
 
 export async function createAccount(input: AccountInput) {
-    if (customerRepository.findCustomerById(input.user_id) === null) {
+    if (await customerRepository.findCustomerById(input.user_id) === null) {
         throw new CustomerNotFoundError(input.user_id);
     }
 
@@ -17,7 +17,7 @@ export async function createAccount(input: AccountInput) {
 }
 
 export async function getAccounts(customer_id: string, premium: number | null) {
-    if (customerRepository.findCustomerById(customer_id) === null) {
+    if (await customerRepository.findCustomerById(customer_id) === null) {
         throw new CustomerNotFoundError(customer_id);
     }
 
@@ -30,7 +30,7 @@ export async function getAccounts(customer_id: string, premium: number | null) {
 }
 
 export async function getAccount(id: string) {
-    const account = accountRepository.findAccountById(id);
+    const account = await accountRepository.findAccountById(id);
     if (account === null) {
         throw new AccountNotFoundError(id);
     }

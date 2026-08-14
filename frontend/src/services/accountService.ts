@@ -19,12 +19,13 @@ interface TransactionResponse {
   created_at: string;
 }
 
-export async function getAccountsForUser(customerId: string): Promise<AccountResponse[]> {
+export async function getAccountsForUser(customerId: string, token: string): Promise<AccountResponse[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/customers/${customerId}/accounts`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       }
     });
 
@@ -43,12 +44,13 @@ export async function getAccountsForUser(customerId: string): Promise<AccountRes
   }
 }
 
-export async function createAccount(payload: CreateAccountInput): Promise<AccountResponse> {
+export async function createAccount(payload: CreateAccountInput, token: string): Promise<AccountResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/accounts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(payload)
     });
@@ -68,12 +70,13 @@ export async function createAccount(payload: CreateAccountInput): Promise<Accoun
   }
 }
 
-export async function depositAccount({accountId, amount}: {accountId: string, amount: number}): Promise<TransactionResponse> {
+export async function depositAccount({accountId, amount, token}: {accountId: string, amount: number, token: string}): Promise<TransactionResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/accounts/${accountId}/deposit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({amount})
     });

@@ -3,18 +3,18 @@ import { useState, useEffect } from "react";
 import { createAccount, getAccountsForUser, type AccountResponse } from '../../services/accountService';
 import AccountCard from './AccountCard';
 
-export default function AccountCollection({userId} : {userId: string}) {
+export default function AccountCollection({userId, token} : {userId: string, token: string}) {
     const [accounts, setAccounts] = useState<AccountResponse[] | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [accountType, setAccountType] = useState<'CHECKING' | 'SAVINGS'>('CHECKING');
 
     useEffect(() => {
         async function fetchAccounts() {
-            setAccounts(await getAccountsForUser(userId));
+            setAccounts(await getAccountsForUser(userId, token));
         }
 
         fetchAccounts();
-    }, [userId]);
+    }, [userId, token]);
 
     async function handleCreateAccount() {
         try {
@@ -22,7 +22,7 @@ export default function AccountCollection({userId} : {userId: string}) {
             const newAccount = await createAccount({
                 user_id: userId,
                 account_type: accountType,
-            });
+            }, token);
 
             setAccounts((currentAccounts) => currentAccounts ? [newAccount, ...currentAccounts] : [newAccount]);
         } catch (error) {
@@ -71,6 +71,7 @@ export default function AccountCollection({userId} : {userId: string}) {
                     <AccountCard
                         key={account.id}
                         account={account}
+                        token={token}
                         onAccountUpdated={handleAccountUpdated}
                     />
                 ))}

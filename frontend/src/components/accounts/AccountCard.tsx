@@ -3,7 +3,7 @@ import { type AccountResponse } from "../../services/accountService"
 import styles from "./AccountCard.module.css"
 import { depositAccount } from "../../services/accountService"
 
-export default function AccountCard({ account, onAccountUpdated }: { account: AccountResponse, onAccountUpdated: (updatedAccount: AccountResponse) => void}) {
+export default function AccountCard({ account, token, onAccountUpdated }: { account: AccountResponse, token: string, onAccountUpdated: (updatedAccount: AccountResponse) => void}) {
     const [amount, setAmount] = useState("0.00");
 
     async function handleDeposit() {
@@ -16,6 +16,7 @@ export default function AccountCard({ account, onAccountUpdated }: { account: Ac
             await depositAccount({
                 accountId: account.id,
                 amount: depositAmount,
+                token,
             });
 
             const updatedAccount = {

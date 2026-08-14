@@ -4,7 +4,7 @@ import { useAuth } from "../context/useAuth";
 import AccountCollection from "../components/accounts/AccountCollection";
 
 export default function Accounts() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,12 +13,12 @@ export default function Accounts() {
     }
   }, [user, navigate]);
 
-  if (user) {
+  if (user && token) {
     return (
       <main className="main">
         <h1>Accounts</h1>
         <p>View and manage your bank accounts here</p>
-        <AccountCollection userId={user.id}/>
+        <AccountCollection userId={user.id} token={token}/>
       </main>
     );
   }

@@ -59,3 +59,12 @@ export async function deposit(id: string, amount: number) {
 
     return result;
 }
+
+export async function deleteAccount(id: string): Promise<boolean> {
+    if (!ObjectId.isValid(id)) {
+        return false;
+    }
+
+    const result = await collection().deleteOne({ _id: new ObjectId(id) });
+    return result.deletedCount === 1;
+}

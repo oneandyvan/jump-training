@@ -70,6 +70,30 @@ export async function createAccount(payload: CreateAccountInput, token: string):
   }
 }
 
+export async function deleteAccount(accountId: string, token: string) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Failed to delete account with status ${response.status}`);
+    }
+
+    return; // No content expected for DELETE requests
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message, { cause: error });
+    }
+    throw new Error('An unexpected error occurred while deleting account', { cause: error });
+  }
+}
+
 export async function depositAccount({accountId, amount, token}: {accountId: string, amount: number, token: string}): Promise<TransactionResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/accounts/${accountId}/deposit`, {

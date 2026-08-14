@@ -38,3 +38,10 @@ export async function getAccount(id: string) {
     return account;
 }
 
+export async function deleteAccount(id: string) {
+    const accountDeleted = await accountRepository.deleteAccount(id);
+
+    if (!accountDeleted) {
+        throw new AccountNotFoundError(id);
+    }
+}

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createAccount, getAccount } from "../controllers/accountController.js";
+import { createAccount, getAccount, deleteAccount } from "../controllers/accountController.js";
 import { depositTransaction } from "../controllers/transactionController.js";
 import { authenticate } from "../middleware/auth.js";
 
@@ -10,5 +10,6 @@ router.use(authenticate);
 router.post("/", createAccount);
 router.get("/:id", getAccount);
 router.post("/:id/deposit", depositTransaction);
+router.delete("/:id", deleteAccount);
 
 export default router;

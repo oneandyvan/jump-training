@@ -1,10 +1,34 @@
 import { useState } from "react"
-import { type AccountResponse } from "../../services/accountService"
 import styles from "./AccountCard.module.css"
-import { depositAccount } from "../../services/accountService"
+import { depositAccount, deleteAccount, type AccountResponse } from "../../services/accountService"
 
-export default function AccountCard({ account, token, onAccountUpdated }: { account: AccountResponse, token: string, onAccountUpdated: (updatedAccount: AccountResponse) => void}) {
+type AccountCardProps = {
+    account: AccountResponse, 
+    token: string, 
+    onAccountUpdated: (updatedAccount: AccountResponse) => void, 
+    onAccountDeleted: (deletedAccountId: string) => void
+}
+
+export default function AccountCard({ account, token, onAccountUpdated, onAccountDeleted }: AccountCardProps) {
     const [amount, setAmount] = useState("0.00");
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    async function handleDelete() {
+        if (!window.confirm("Are you sure you want to delete this account?")) {
+            return;
+        }
+
+        try {
+            setIsDeleting(true);
+            await deleteAccount(account.id, token);
+            onAccountDeleted(account.id);
+        } catch (error) {
+            console.error('Failed to delete account:', error);
+            alert(error instanceof Error ? error.message : 'Failed to delete account');
+        } finally {
+            setIsDeleting(false);
+        }
+    }
 
     async function handleDeposit() {
         const depositAmount = Number(amount);
@@ -42,8 +66,13 @@ export default function AccountCard({ account, token, onAccountUpdated }: { acco
                     <span className={styles.accountLabel}>Account</span>
                     <h3>{account.account_type}</h3>
                 </div>
-                <button type="button" className={styles.deleteButton}>
-                    Delete
+                <button
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                >
+                    {isDeleting ? 'Deleting...' : 'Delete'}
                 </button>
             </div>
 

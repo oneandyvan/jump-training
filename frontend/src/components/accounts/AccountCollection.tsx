@@ -46,6 +46,15 @@ export default function AccountCollection({userId, token} : {userId: string, tok
         );
     }
 
+    // Callback for child cards to remove themselves from parent state
+    function handleAccountDeleted(deletedAccountId: string) {
+        setAccounts((currentAccounts) =>
+            currentAccounts
+                ? currentAccounts.filter((account) => account.id !== deletedAccountId)
+                : currentAccounts
+        );
+    }
+
     return (
         <section className={styles.accountSection}>
             <div className={styles.accountHeader}>
@@ -73,6 +82,7 @@ export default function AccountCollection({userId, token} : {userId: string, tok
                         account={account}
                         token={token}
                         onAccountUpdated={handleAccountUpdated}
+                        onAccountDeleted={handleAccountDeleted}
                     />
                 ))}
             </div>

@@ -48,3 +48,18 @@ export async function depositTransaction(accountId: string, amount: number) {
         created_at: transaction.created_at
     };
 }
+
+export async function getTransactionsForAccount(accountId: string): Promise<Transaction[]> {
+    const documents = await collection().find({ account_id: accountId }).toArray() as TransactionDocument[];
+    return documents.map(toTransaction);
+}
+
+export async function getTransactionsForCustomer(customerId: string): Promise<Transaction[]> {
+    //  First, get all accounts for the customer
+    const accounts = await accountRepository.getAccounts(customerId);
+    const accountIds = accounts.map(account => account.id);
+
+    //  Then, get all transactions for these accounts
+    const documents = await collection().find({ account_id: { $in: accountIds } }).toArray() as TransactionDocument[];
+    return documents.map(toTransaction);
+}

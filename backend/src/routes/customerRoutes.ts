@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createCustomer, getCustomers, getCustomer, updateCustomer, deleteCustomer, loginCustomer } from "../controllers/customerController.js";
 import { getAccounts } from "../controllers/accountController.js";
+import { getTransactionsForCustomer } from "../controllers/transactionController.js";
 import { authenticate } from "../middleware/auth.js";
 
 
@@ -15,5 +16,8 @@ router.get("/:id/accounts", authenticate, getAccounts);
 
 //  For login
 router.post("/login", loginCustomer);
+
+//  For fetching transactions of a customer
+router.get("/:id/transactions", authenticate, getTransactionsForCustomer);
 
 export default router;

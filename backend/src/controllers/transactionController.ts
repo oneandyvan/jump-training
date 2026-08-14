@@ -36,3 +36,28 @@ export async function depositTransaction(req: AuthenticatedRequest, res: Respons
         });
     }
 }
+
+export async function getTransactionsForCustomer(req: AuthenticatedRequest, res: Response) {
+    const id = req.params.id;
+
+    if (typeof id !== "string" || !id) {
+        return res.status(400).json({
+            error: "Customer ID is required"
+        });
+    }
+
+    try {
+        if (id !== req.customerId) {
+            return res.status(403).json({
+                error: "You cannot view another customer's transactions"
+            });
+        }
+
+        const transactions = await transactionService.getTransactionsForCustomer(req.customerId);
+        res.status(200).json(transactions);
+    } catch (error) {
+        res.status(500).json({
+            error: (error as Error).message
+        });
+    }
+}

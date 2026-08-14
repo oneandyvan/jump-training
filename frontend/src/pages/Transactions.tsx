@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import TransactionTable from "../components/transactions/TransactionTable";
 
 export default function Transactions() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,11 +13,12 @@ export default function Transactions() {
     }
   }, [user, navigate]);
 
-  if (user) {
+  if (user && token) {
     return (
       <main className="main">
         <h1>Transactions</h1>
         <p>View your transaction history here</p>
+        <TransactionTable userId={user.id} token={token} />
       </main>
     );
   }
@@ -24,7 +26,7 @@ export default function Transactions() {
     return (
       <main className="main">
         <h1>Transactions</h1>
-        <p>View your transaction history here</p>
+        <p>View your transaction history here (for existing accounts only)</p>
       </main>
     );
   }
